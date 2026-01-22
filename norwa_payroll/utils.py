@@ -159,3 +159,6 @@ def create_kenya_components():
             doc.flags.ignore_permissions = True
             doc.save()
 
+
+# Alias for Hooks
+setup_payroll = create_kenya_components
