@@ -1,0 +1,10 @@
+*.pyc
+__pycache__
+*.egg-info
+*.egg
+build
+dist
+.DS_Store
+*.swp
+.vscode
+verifier_logic.py

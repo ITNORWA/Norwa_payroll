@@ -1,0 +1,36 @@
+{
+    "actions": [],
+    "creation": "2026-01-21 17:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "tax_regime"
+    ],
+    "fields": [
+        {
+            "fieldname": "tax_regime",
+            "fieldtype": "Select",
+            "label": "Tax Regime",
+            "options": "2025\n2026",
+            "default": "2025"
+        }
+    ],
+    "issingle": 1,
+    "module": "Norwa Payroll",
+    "name": "Norwa Payroll Settings",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "email": 1,
+            "print": 1,
+            "read": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

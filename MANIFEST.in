@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include norwa_payroll *.css
+recursive-include norwa_payroll *.csv
+recursive-include norwa_payroll *.html
+recursive-include norwa_payroll *.ico
+recursive-include norwa_payroll *.js
+recursive-include norwa_payroll *.json
+recursive-include norwa_payroll *.md
+recursive-include norwa_payroll *.png
+recursive-include norwa_payroll *.py
+recursive-include norwa_payroll *.svg
+recursive-include norwa_payroll *.txt
+recursive-exclude norwa_payroll *.pyc
