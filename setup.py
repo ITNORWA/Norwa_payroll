@@ -11,7 +11,7 @@ setup(
 	version=__version__,
 	description="Kenya Payroll Component with ERPNext Integration",
 	author="Norwa",
-	author_email="admin@norwa.com",
+	author_email="it-department@norwaafrica.com",
 	packages=find_packages(),
 	zip_safe=False,
 	include_package_data=True,

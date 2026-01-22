@@ -2,7 +2,7 @@ app_name = "norwa_payroll"
 app_title = "Norwa Payroll"
 app_publisher = "Norwa"
 app_description = "Kenya Payroll Integration"
-app_email = "admin@norwa.com"
+app_email = "it-department@norwaafrica.com"
 app_license = "mit"
 
 # Includes in <head>
