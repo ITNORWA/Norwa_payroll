@@ -19,3 +19,7 @@ app_license = "mit"
 doctype_js = {
     "Salary Structure": "public/js/salary_structure.js"
 }
+
+# Setup Hooks
+after_install = "norwa_payroll.utils.setup_payroll"
+after_migrate = "norwa_payroll.utils.setup_payroll"
