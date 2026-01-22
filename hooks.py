@@ -17,7 +17,7 @@ app_license = "mit"
 
 # include js in doctype views
 doctype_js = {
-    "Salary Structure": "public/js/salary_structure.js"
+    "Salary Structure": "norwa_payroll/public/js/salary_structure.js"
 }
 
 # Setup Hooks

@@ -1,10 +1,12 @@
 from setuptools import setup, find_packages
+import os
 
 with open("requirements.txt") as f:
 	install_requires = f.read().strip().split("\n")
 
 # get version from __init__.py
-__version__ = "0.0.1"
+with open(os.path.join(os.path.dirname(__file__), "norwa_payroll", "__init__.py")) as f:
+    exec(f.read())
 
 setup(
 	name="norwa_payroll",
