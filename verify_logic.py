@@ -12,6 +12,7 @@ frappe.db = types.ModuleType("frappe.db")
 # Mock Settings State
 mock_settings = {"tax_regime": "2025"}
 frappe.db.get_single_value = lambda dt, f: mock_settings.get(f)
+frappe.parse_json = lambda x: x if isinstance(x, (dict, list)) else {} # Simple mock
 
 sys.modules["frappe"] = frappe
 sys.modules["frappe.model"] = frappe.model
@@ -20,7 +21,7 @@ sys.modules["frappe.db"] = frappe.db
 
 # Now import the logic
 import os
-sys.path.append(os.path.join(os.getcwd(), "norwa_payroll"))
+sys.path.append(os.getcwd()) # Append Root for package discovery
 
 # Note: We can't import `apply_kenya_structure` easily because it calls db.get_single_value at runtime.
 # But `calculate_paye_2026` is pure math.
