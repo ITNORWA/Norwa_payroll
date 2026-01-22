@@ -12,12 +12,21 @@ frappe.db = types.ModuleType("frappe.db")
 # Mock Settings State
 mock_settings = {"tax_regime": "2025"}
 frappe.db.get_single_value = lambda dt, f: mock_settings.get(f)
+frappe.db.exists = lambda dt, n: False # Mock: Component doesn't exist
 frappe.parse_json = lambda x: x if isinstance(x, (dict, list)) else {} # Simple mock
 
 sys.modules["frappe"] = frappe
 sys.modules["frappe.model"] = frappe.model
 sys.modules["frappe.model.mapper"] = frappe.model.mapper
 sys.modules["frappe.db"] = frappe.db
+
+# Mock Document for new_doc
+class MockDoc:
+    def __init__(self, doctype):
+        self.flags = types.SimpleNamespace()
+    def save(self): pass
+
+frappe.new_doc = lambda dt: MockDoc(dt)
 
 # Now import the logic
 import os
