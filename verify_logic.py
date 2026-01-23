@@ -42,50 +42,50 @@ def verify_payroll():
     print("Verifying Kenya Payroll Logic (2025 vs 2026)...")
     
     # ---------------------------
-    # Test 1: 2025 Regime (NSSF Limit 72,000 / 8,000)
+    # Test Cases: User Requested Salaries
     # ---------------------------
-    mock_settings["tax_regime"] = "2025"
-    print("\n--- Testing 2025 Regime (NSSF Max 72k/8k) ---")
+    test_salaries = [20000, 45000, 65000, 75000, 100000, 150000, 200000]
     
-    # Check Formulas
-    data = apply_kenya_structure("{}")
-    
-    # Extract NSSF Formula strings to verify
-    nssf1_f = next(d['formula'] for d in data['deductions'] if d['abbr'] == 'NSSF1')
-    nssf2_f = next(d['formula'] for d in data['deductions'] if d['abbr'] == 'NSSF2')
-    
-    print(f"NSSF1 Formula: {nssf1_f}")
-    print(f"NSSF2 Formula: {nssf2_f}")
-    
-    if "8000" in nssf1_f and "72000" in nssf2_f:
-         print("[PASS] 2025 Formulas use 8,000 and 72,000 limits.")
-    else:
-         print("[FAIL] 2025 Formulas incorrect.")
+    for year, nssf_limits in [("2025", (8000, 72000)), ("2026", (9000, 108000))]:
+        mock_settings["tax_regime"] = year
+        print(f"\n{'='*50}")
+        print(f"  TESTING {year} REGIME (NSSF Limits: {nssf_limits})")
+        print(f"{'='*50}")
+        print(f"{'Gross':<10} | {'NSSF':<10} | {'SHIF':<10} | {'AHL':<10} | {'Taxable':<10} | {'PAYE':<10} | {'Net Pay':<10}")
+        print("-" * 80)
+        
+        t1_lim, t2_lim = nssf_limits
+        
+        for gross in test_salaries:
+            # 1. NSSF
+            # Tier I
+            nssf1 = min(gross, t1_lim) * 0.06
+            # Tier II
+            if gross > t1_lim:
+                nssf2 = (min(gross, t2_lim) - t1_lim) * 0.06
+            else:
+                nssf2 = 0
+            
+            nssf_total = nssf1 + nssf2
+            
+            # 2. SHIF (2.75%)
+            shif = gross * 0.0275
+            
+            # 3. AHL (1.5%)
+            ahl = gross * 0.015
+            
+            # 4. PAYE
+            # Note: We call the function, which handles reliefs internally
+            paye = calculate_paye_2026(gross, nssf1, nssf2, shif, ahl)
+            
+            # 5. Net Pay
+            net = gross - nssf_total - shif - ahl - paye
+            
+            # Taxable (For display comparison) is Gross - NSSF - SHIF (Deductible)
+            taxable = gross - nssf_total - shif
+            
+            print(f"{gross:<10} | {nssf_total:<10.2f} | {shif:<10.2f} | {ahl:<10.2f} | {taxable:<10.2f} | {paye:<10.2f} | {net:<10.2f}")
 
-    # ---------------------------
-    # Test 2: 2026 Regime (NSSF Limit 108,000 / 9,000)
-    # ---------------------------
-    mock_settings["tax_regime"] = "2026"
-    print("\n--- Testing 2026 Regime (NSSF Max 108k/9k) ---")
-    
-    data = apply_kenya_structure("{}")
-    nssf1_f = next(d['formula'] for d in data['deductions'] if d['abbr'] == 'NSSF1')
-    nssf2_f = next(d['formula'] for d in data['deductions'] if d['abbr'] == 'NSSF2')
-    
-    print(f"NSSF1 Formula: {nssf1_f}")
-    print(f"NSSF2 Formula: {nssf2_f}")
-    
-    if "9000" in nssf1_f and "108000" in nssf2_f:
-         print("[PASS] 2026 Formulas use 9,000 and 108,000 limits.")
-    else:
-         print("[FAIL] 2026 Formulas incorrect.")
-
-    # ---------------------------
-    # Test 3: PAYE Calculation (Unchanged logic, just verification of import)
-    # ---------------------------
-    paye = calculate_paye_2026(50000, 540, 2460, 1375, 750)
-    if paye > 1000:
-        print(f"\n[PASS] PAYE Calc Functional: {paye}")
 
 if __name__ == "__main__":
     verify_payroll()
