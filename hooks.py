@@ -2,7 +2,7 @@ app_name = "norwa_payroll"
 app_title = "Norwa Payroll"
 app_publisher = "Norwa"
 app_description = "Kenya Payroll Integration"
-app_email = "admin@norwa.com"
+app_email = "it-department@norwaafrica.com"
 app_license = "mit"
 
 # Frappe App Hooks
@@ -18,7 +18,7 @@ app_license = "mit"
 
 # include js in doctype views
 doctype_js = {
-    "Salary Structure": "public/js/salary_structure.js"
+    "Salary Structure": "norwa_payroll/public/js/salary_structure.js"
 }
 
 # Setup Hooks

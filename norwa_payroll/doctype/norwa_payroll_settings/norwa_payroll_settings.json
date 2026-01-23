@@ -16,7 +16,7 @@
         }
     ],
     "issingle": 1,
-    "module": "Norwa Payroll",
+    "module": "norwa_payroll",
     "name": "Norwa Payroll Settings",
     "owner": "Administrator",
     "permissions": [
