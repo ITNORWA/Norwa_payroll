@@ -15,14 +15,39 @@ frappe.ui.form.on('Salary Structure', {
                                 }
 
                                 const existing = frm.doc[fieldname] || [];
-                                const components_to_add = rows.map(row => row.salary_component);
-                                const new_list = existing.filter(row => !components_to_add.includes(row.salary_component));
+                                const incoming = new Set(rows.map(row => row.salary_component));
+                                const pruned = [];
+                                const seen = new Set();
 
-                                rows.forEach(row => {
-                                    new_list.push(row);
+                                // Keep non-managed rows and de-dup managed ones.
+                                existing.forEach(row => {
+                                    if (!incoming.has(row.salary_component)) {
+                                        pruned.push(row);
+                                        return;
+                                    }
+
+                                    if (seen.has(row.salary_component)) {
+                                        frappe.model.clear_doc(row.doctype, row.name);
+                                        return;
+                                    }
+
+                                    seen.add(row.salary_component);
+                                    pruned.push(row);
                                 });
 
-                                frm.doc[fieldname] = new_list;
+                                frm.doc[fieldname] = pruned;
+
+                                rows.forEach(row => {
+                                    const match = pruned.find(item => item.salary_component === row.salary_component);
+                                    if (match) {
+                                        Object.assign(match, row);
+                                        return;
+                                    }
+
+                                    const child = frm.add_child(fieldname);
+                                    Object.assign(child, row);
+                                });
+
                                 frm.refresh_field(fieldname);
                             };
 
