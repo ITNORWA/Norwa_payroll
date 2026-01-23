@@ -88,7 +88,7 @@ def apply_kenya_structure(doc):
         "salary_component": "PAYE",
         "abbr": "PAYE",
         "amount_based_on_formula": 1,
-        "formula": "norwa_payroll.utils.calculate_paye_2026(gross_pay, NSSF1, NSSF2, SHIF, AHL)",
+        "formula": "norwa_payroll.norwa_payroll.utils.calculate_paye_2026(gross_pay, NSSF1, NSSF2, SHIF, AHL)",
         "condition": "gross_pay > 0"
     })
 
