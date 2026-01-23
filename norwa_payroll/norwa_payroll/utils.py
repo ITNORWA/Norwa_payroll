@@ -62,6 +62,22 @@ def apply_kenya_structure(doc):
         "abbr": "TA",
         "amount": 0
     })
+    data["earnings"].append({
+        "salary_component": "Taxable Pay",
+        "abbr": "TP",
+        "amount_based_on_formula": 1,
+        "formula": "gross_pay - NSSF1 - NSSF2 - SHIF",
+        "statistical_component": 1,
+        "do_not_include_in_total": 1
+    })
+    data["earnings"].append({
+        "salary_component": "Pay After Tax",
+        "abbr": "PAT",
+        "amount_based_on_formula": 1,
+        "formula": "gross_pay - NSSF1 - NSSF2 - SHIF - AHL - PAYE",
+        "statistical_component": 1,
+        "do_not_include_in_total": 1
+    })
 
     # Deductions
     data["deductions"].append({
@@ -94,6 +110,15 @@ def apply_kenya_structure(doc):
         "amount_based_on_formula": 1,
         "formula": "gross_pay * 0.015",
         "condition": "gross_pay > 0"
+    })
+    
+    data["deductions"].append({
+        "salary_component": "Personal Relief",
+        "abbr": "PR",
+        "amount_based_on_formula": 1,
+        "formula": "2400 if (gross_pay - NSSF1 - NSSF2 - SHIF) > 0 else 0",
+        "statistical_component": 1,
+        "do_not_include_in_total": 1
     })
 
     # PAYE
@@ -162,19 +187,41 @@ def create_kenya_components():
         {"name": "SHIF", "type": "Deduction", "abbr": "SHIF"},
         {"name": "Housing Levy", "type": "Deduction", "abbr": "AHL"},
         {"name": "PAYE", "type": "Deduction", "abbr": "PAYE"},
+        {"name": "Personal Relief", "type": "Deduction", "abbr": "PR", "statistical": True},
         {"name": "Basic Salary", "type": "Earning", "abbr": "BS"},
         {"name": "House Allowance", "type": "Earning", "abbr": "HA"},
         {"name": "Transport Allowance", "type": "Earning", "abbr": "TA"},
+        {"name": "Taxable Pay", "type": "Earning", "abbr": "TP", "statistical": True},
+        {"name": "Pay After Tax", "type": "Earning", "abbr": "PAT", "statistical": True},
     ]
-    
+
     for comp in components:
-        if not frappe.db.exists("Salary Component", comp["name"]):
-            doc = frappe.new_doc("Salary Component")
-            doc.salary_component = comp["name"]
-            doc.type = comp["type"]
-            doc.salary_component_abbr = comp["abbr"]
-            doc.flags.ignore_permissions = True
-            doc.save()
+        existing = frappe.db.exists("Salary Component", comp["name"])
+        if existing:
+            if comp.get("statistical"):
+                doc = frappe.get_doc("Salary Component", comp["name"])
+                if _set_statistical_flags(doc):
+                    doc.flags.ignore_permissions = True
+                    doc.save()
+            continue
+
+        doc = frappe.new_doc("Salary Component")
+        doc.salary_component = comp["name"]
+        doc.type = comp["type"]
+        doc.salary_component_abbr = comp["abbr"]
+        if comp.get("statistical"):
+            _set_statistical_flags(doc)
+        doc.flags.ignore_permissions = True
+        doc.save()
+
+
+def _set_statistical_flags(doc):
+    updated = False
+    for fieldname in ("statistical_component", "is_statistical_component", "do_not_include_in_total"):
+        if doc.meta.get_field(fieldname) and not doc.get(fieldname):
+            doc.set(fieldname, 1)
+            updated = True
+    return updated
 
 
 # Alias for Hooks
