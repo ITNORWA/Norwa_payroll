@@ -5,6 +5,7 @@ app_description = "Kenya Payroll Integration"
 app_email = "admin@norwa.com"
 app_license = "mit"
 
+# Frappe App Hooks
 # Includes in <head>
 # ------------------
 
