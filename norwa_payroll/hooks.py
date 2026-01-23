@@ -15,5 +15,5 @@ doctype_js = {
 }
 
 # Setup Hooks
-after_install = "norwa_payroll.utils.setup_payroll"
-after_migrate = "norwa_payroll.utils.setup_payroll"
+after_install = "norwa_payroll.norwa_payroll.utils.setup_payroll"
+after_migrate = "norwa_payroll.norwa_payroll.utils.setup_payroll"

@@ -16,3 +16,4 @@ recursive-include norwa_payroll *.py
 recursive-include norwa_payroll *.svg
 recursive-include norwa_payroll *.txt
 recursive-exclude norwa_payroll *.pyc
+
