@@ -46,6 +46,23 @@ def apply_kenya_structure(doc):
         t1_limit = 8000
         t2_limit = 72000
 
+    # Earnings
+    data["earnings"].append({
+        "salary_component": "Basic Salary",
+        "abbr": "BS",
+        "amount": 0
+    })
+    data["earnings"].append({
+        "salary_component": "House Allowance",
+        "abbr": "HA",
+        "amount": 0
+    })
+    data["earnings"].append({
+        "salary_component": "Transport Allowance",
+        "abbr": "TA",
+        "amount": 0
+    })
+
     # Deductions
     data["deductions"].append({
         "salary_component": "NSSF Tier I",
