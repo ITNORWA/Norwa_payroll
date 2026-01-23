@@ -36,7 +36,7 @@ sys.path.append(os.getcwd()) # Append Root for package discovery
 # But `calculate_paye_2026` is pure math.
 # To verify the formula dynamic generation, we should import `apply_kenya_structure`.
 # However, importing utils might execute top level code? No functions only.
-from norwa_payroll.utils import calculate_paye_2026, apply_kenya_structure
+from norwa_payroll.norwa_payroll.utils import calculate_paye_2026, apply_kenya_structure
 
 def verify_payroll():
     print("Verifying Kenya Payroll Logic (2025 vs 2026)...")

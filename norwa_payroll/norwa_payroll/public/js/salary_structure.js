@@ -3,7 +3,7 @@ frappe.ui.form.on('Salary Structure', {
         if (!frm.doc.__islocal) {
             frm.add_custom_button(__('Apply Kenya Tax 2026'), function () {
                 frappe.call({
-                    method: 'norwa_payroll.utils.apply_kenya_structure',
+                    method: 'norwa_payroll.norwa_payroll.utils.apply_kenya_structure',
                     args: {
                         doc: frm.doc
                     },
