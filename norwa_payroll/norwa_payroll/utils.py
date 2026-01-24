@@ -46,35 +46,46 @@ def apply_kenya_structure(doc):
         t1_limit = 8000
         t2_limit = 72000
 
+    default_abbrs = {
+        "NSSF Tier I": "NSSF1",
+        "NSSF Tier II": "NSSF2",
+        "SHIF": "SHIF",
+        "Housing Levy": "AHL",
+        "PAYE": "PAYE",
+        "Personal Relief": "PR",
+        "Basic Salary": "BS",
+        "House Allowance": "HA",
+        "Transport Allowance": "TA",
+        "Taxable Pay": "TP",
+    }
+    abbrs = _get_component_abbrs(default_abbrs)
+    nssf1_abbr = abbrs["NSSF Tier I"]
+    nssf2_abbr = abbrs["NSSF Tier II"]
+    shif_abbr = abbrs["SHIF"]
+    ahl_abbr = abbrs["Housing Levy"]
+    paye_abbr = abbrs["PAYE"]
+
     # Earnings
     data["earnings"].append({
         "salary_component": "Basic Salary",
-        "abbr": "BS",
+        "abbr": abbrs["Basic Salary"],
         "amount": 0
     })
     data["earnings"].append({
         "salary_component": "House Allowance",
-        "abbr": "HA",
+        "abbr": abbrs["House Allowance"],
         "amount": 0
     })
     data["earnings"].append({
         "salary_component": "Transport Allowance",
-        "abbr": "TA",
+        "abbr": abbrs["Transport Allowance"],
         "amount": 0
     })
     data["earnings"].append({
         "salary_component": "Taxable Pay",
-        "abbr": "TP",
+        "abbr": abbrs["Taxable Pay"],
         "amount_based_on_formula": 1,
-        "formula": "gross_pay - NSSF1 - NSSF2 - SHIF",
-        "statistical_component": 1,
-        "do_not_include_in_total": 1
-    })
-    data["earnings"].append({
-        "salary_component": "Pay After Tax",
-        "abbr": "PAT",
-        "amount_based_on_formula": 1,
-        "formula": "gross_pay - NSSF1 - NSSF2 - SHIF - AHL - PAYE",
+        "formula": f"gross_pay - {nssf1_abbr} - {nssf2_abbr} - {shif_abbr}",
         "statistical_component": 1,
         "do_not_include_in_total": 1
     })
@@ -82,7 +93,7 @@ def apply_kenya_structure(doc):
     # Deductions
     data["deductions"].append({
         "salary_component": "NSSF Tier I",
-        "abbr": "NSSF1",
+        "abbr": nssf1_abbr,
         "amount_based_on_formula": 1,
         "formula": f"min(gross_pay, {t1_limit}) * 0.06",
         "condition": "gross_pay > 0"
@@ -90,7 +101,7 @@ def apply_kenya_structure(doc):
     
     data["deductions"].append({
         "salary_component": "NSSF Tier II",
-        "abbr": "NSSF2",
+        "abbr": nssf2_abbr,
         "amount_based_on_formula": 1,
         "formula": f"(min(gross_pay, {t2_limit}) - {t1_limit}) * 0.06 if gross_pay > {t1_limit} else 0",
         "condition": f"gross_pay > {t1_limit}"
@@ -98,7 +109,7 @@ def apply_kenya_structure(doc):
     
     data["deductions"].append({
         "salary_component": "SHIF",
-        "abbr": "SHIF",
+        "abbr": shif_abbr,
         "amount_based_on_formula": 1,
         "formula": "gross_pay * 0.0275",
         "condition": "gross_pay > 0"
@@ -106,7 +117,7 @@ def apply_kenya_structure(doc):
     
     data["deductions"].append({
         "salary_component": "Housing Levy",
-        "abbr": "AHL",
+        "abbr": ahl_abbr,
         "amount_based_on_formula": 1,
         "formula": "gross_pay * 0.015",
         "condition": "gross_pay > 0"
@@ -114,9 +125,9 @@ def apply_kenya_structure(doc):
     
     data["deductions"].append({
         "salary_component": "Personal Relief",
-        "abbr": "PR",
+        "abbr": abbrs["Personal Relief"],
         "amount_based_on_formula": 1,
-        "formula": "2400 if (gross_pay - NSSF1 - NSSF2 - SHIF) > 0 else 0",
+        "formula": f"2400 if (gross_pay - {nssf1_abbr} - {nssf2_abbr} - {shif_abbr}) > 0 else 0",
         "statistical_component": 1,
         "do_not_include_in_total": 1
     })
@@ -128,9 +139,12 @@ def apply_kenya_structure(doc):
     
     data["deductions"].append({
         "salary_component": "PAYE",
-        "abbr": "PAYE",
+        "abbr": paye_abbr,
         "amount_based_on_formula": 1,
-        "formula": "norwa_payroll.norwa_payroll.utils.calculate_paye_2026(gross_pay, NSSF1, NSSF2, SHIF, AHL)",
+        "formula": (
+            "norwa_payroll.norwa_payroll.utils.calculate_paye_2026"
+            f"(gross_pay, {nssf1_abbr}, {nssf2_abbr}, {shif_abbr}, {ahl_abbr})"
+        ),
         "condition": "gross_pay > 0"
     })
 
@@ -192,7 +206,6 @@ def create_kenya_components():
         {"name": "House Allowance", "type": "Earning", "abbr": "HA"},
         {"name": "Transport Allowance", "type": "Earning", "abbr": "TA"},
         {"name": "Taxable Pay", "type": "Earning", "abbr": "TP", "statistical": True},
-        {"name": "Pay After Tax", "type": "Earning", "abbr": "PAT", "statistical": True},
     ]
 
     for comp in components:
@@ -222,6 +235,14 @@ def _set_statistical_flags(doc):
             doc.set(fieldname, 1)
             updated = True
     return updated
+
+
+def _get_component_abbrs(default_abbrs):
+    abbrs = {}
+    for name, fallback in default_abbrs.items():
+        abbr = frappe.db.get_value("Salary Component", name, "salary_component_abbr")
+        abbrs[name] = abbr or fallback
+    return abbrs
 
 
 # Alias for Hooks
